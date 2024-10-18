@@ -4,7 +4,7 @@ complete the work .User also gets a reminder before the deadline and a push noti
 The list is sorted according to the priority.
 User can search and find the specific to-do task with a search bar on top .
 To set dead line of a task they can set date , exact timming.
-To-do list displays Title,description ,amd deadline .
+To-do list displays Title,description ,amd deadline .The data of the user is saved .
 
 ## Developing of the application
 
@@ -16,7 +16,7 @@ For the priority (High ,medium,low) is used sorting.
 
 For the remainder I used the flutter_local_notification 30 mi before the end of the deadline as to give a quick remainder for the user and another push notification as the deadline ends.
 
-
+I used shared prefernces to save the data of the user.
 
 ## Demo link
 
