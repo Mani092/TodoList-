@@ -9,6 +9,7 @@ class TodoController extends GetxController {
   var tasks = <Task>[].obs;
   var isChecked = [].obs;
   var filteredTasks = <Task>[].obs;
+  var etasks = <Task>[].obs;
 
   void additem(Task title) {
     tasks.add(title);
@@ -21,18 +22,26 @@ class TodoController extends GetxController {
   }
   void sortTasks() {
     tasks.sort((a, b) {
-      int priorityComparison = a.priorityValue.compareTo(b.priorityValue);
+
+      int priorityComparison = b.priorityValue.compareTo(a.priorityValue);
+
+
       if (priorityComparison == 0) {
-        return a.reminderTime.value.compareTo(b.reminderTime.value); // Compare the values of reminderTime
+        return a.reminderTime.value.compareTo(b.reminderTime.value);  // Compare reminder times in ascending order
       } else {
-        return priorityComparison; // Sort by priority if different
+        return priorityComparison;
       }
     });
+    filterTasks('');
   }
 
   void deleteitem(int index) {
-    tasks.removeAt(index);
-    isChecked.removeAt(index);
+    if (tasks.isNotEmpty && index >= 0 && index < tasks.length) {
+      tasks.removeAt(index);
+    } else {
+      print("Invalid index or task list is empty");
+    }
+    filterTasks('');
   }
 
   int count2do() {
@@ -40,8 +49,12 @@ class TodoController extends GetxController {
     return checked;
   }
 
-  void edititem(value, index) {
-    tasks[index] = value;
+  void edititem(Task task, String newTitle, String newDescription, String newPriority, DateTime newReminderTime) {
+    task.title.value = newTitle;
+    task.description.value = newDescription;
+    task.priority.value = newPriority;
+    task.reminderTime.value = newReminderTime;
+    tasks.refresh();  // Refresh the task list
   }
 
   void filterTasks(String query) {

@@ -1,144 +1,135 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import 'package:todoapp/controller/controller.dart';
 
 import '../model/task.dart';
 
 class EditTaskDialog extends StatefulWidget {
-  final int index;
   final Task task;
 
-  EditTaskDialog({required this.index, required this.task});
+  EditTaskDialog({required this.task});
 
   @override
   _EditTaskDialogState createState() => _EditTaskDialogState();
 }
 
 class _EditTaskDialogState extends State<EditTaskDialog> {
-  final _formKey = GlobalKey<FormState>();
-  late String _title;
-  late String _priority;
-  late String _disc;
-    late DateTime _reminderTime;
-
   final TodoController taskController = Get.find();
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  String selectedPriority = 'Low';
+  DateTime selectedReminderTime = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _title = widget.task.title.value;
-    _priority = widget.task.priority.value;
-    _disc=widget.task.description.value;
-    _reminderTime = widget.task.reminderTime.value;
+
+    // Set initial values
+    titleController.text = widget.task.title.value;
+    descriptionController.text = widget.task.description.value;
+    selectedPriority = widget.task.priority.value;
+    selectedReminderTime = widget.task.reminderTime.value;
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Edit Task'),
-      content: Form(
-        key: _formKey,
+      content: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            TextFormField(
-              initialValue: _title,
-              decoration: InputDecoration(labelText: 'Task Title'),
-              onSaved: (value) {
-                _title = value ?? '';
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a title';
-                }
-                return null;
-              },
+            // Title Text Field
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                labelText: 'Title',
+              ),
             ),
-            TextFormField(
-              initialValue: _disc,
-              decoration: InputDecoration(labelText: 'Task Discription'),
-              onSaved: (value) {
-                _disc = value ?? '';
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a discription';
+
+            // Description Text Field
+            TextField(
+              controller: descriptionController,
+              decoration: InputDecoration(
+                labelText: 'Description',
+              ),
+            ),
+
+            // Dropdown for Priority Level
+            DropdownButton<String>(
+              value: selectedPriority,
+              items: ['Low', 'Medium', 'High'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedPriority = newValue;
+                  });
                 }
-                return null;
               },
             ),
 
-            DropdownButtonFormField(
-              decoration: InputDecoration(labelText: 'Priority Level'),
-              value: _priority,
-              onChanged: (value) {
-                setState(() {
-                  _priority = value!;
-                });
-              },
-              items: ['Low', 'Medium', 'High'].map((String priority) {
-                return DropdownMenuItem(
-                  value: priority,
-                  child: Text(priority),
-                );
-              }).toList(),
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Reminder Time'),
-              onTap: () async {
-                DateTime? picked = await showDatePicker(
+            SizedBox(height: 10),
+
+            // Select Reminder Date
+            TextButton(
+              onPressed: () async {
+                DateTime? pickedDate = await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2020),
+                  initialDate: selectedReminderTime,
+                  firstDate: DateTime.now(),
                   lastDate: DateTime(2100),
                 );
-                if (picked != null) {
-                  TimeOfDay? time = await showTimePicker(
+                if (pickedDate != null) {
+                  TimeOfDay? pickedTime = await showTimePicker(
                     context: context,
-                    initialTime: TimeOfDay.fromDateTime(_reminderTime),
+                    initialTime: TimeOfDay.fromDateTime(selectedReminderTime),
                   );
-                  if (time != null) {
+                  if (pickedTime != null) {
                     setState(() {
-                      // Update _reminderTime with both date and time
-                      _reminderTime = DateTime(
-                        picked.year,
-                        picked.month,
-                        picked.day,
-                        time.hour,
-                        time.minute,
+                      selectedReminderTime = DateTime(
+                        pickedDate.year,
+                        pickedDate.month,
+                        pickedDate.day,
+                        pickedTime.hour,
+                        pickedTime.minute,
                       );
                     });
                   }
                 }
               },
-              readOnly: true,
-              controller: TextEditingController(text: getFormattedDateTime(_reminderTime!)),
+              child: Text(
+                'Select Reminder Time: ${DateFormat('dd-MM-yyyy HH:mm').format(selectedReminderTime)}',
+              ),
             ),
           ],
         ),
       ),
       actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);  // Close the dialog
+          },
+          child: Text('Cancel'),
+        ),
         ElevatedButton(
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-
-              // Update the task in TaskController
-              taskController.edititem(
-                Task(
-                  title: _title,
-                  priority: _priority,
-                  description: _disc,
-                  reminderTime: _reminderTime,
-                ),
-                widget.index,
-              );
-
-              Get.back();  // Close dialog
-            }
+            // Update the task
+            taskController.edititem(
+              widget.task,
+              titleController.text,
+              descriptionController.text,
+              selectedPriority,
+              selectedReminderTime,
+            );
+            Navigator.pop(context);  // Close the dialog after saving
           },
-          child: Text('Save Changes'),
+          child: Text('Save'),
         ),
       ],
     );

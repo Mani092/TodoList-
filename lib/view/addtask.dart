@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:intl/intl.dart';
 import 'package:todoapp/controller/controller.dart';
 import 'package:todoapp/model/notification.dart';
 
@@ -30,7 +29,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           children: [
             TextFormField(
               decoration: InputDecoration(labelText: 'Task Title'),
-              onSaved: (value) {
+              onChanged: (value) {
                 _title = value ?? '';
               },
               validator: (value) {
@@ -42,7 +41,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             ),
             TextFormField(
               decoration: InputDecoration(labelText: 'Task Discription'),
-              onSaved: (value) {
+              onChanged: (value) {
                 _disc = value ?? '';
               },
               validator: (value) {
@@ -113,20 +112,23 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 reminderTime: _reminderTime,
               );
               taskController.additem(newTask);
-              DateTime scheduled=_reminderTime;
-              DateTime lsrem=scheduled.subtract(Duration(minutes: 30));
-              NotificationService.scheduleNotification(
-                0,
-                'The ${_title} will expire in 30 mins',
-                _disc,
-                lsrem,
-              );
-              NotificationService.scheduleNotification(
-                0,
-                'The ${_title}has expired',
-                _disc,
-                scheduled,
-              );
+              if(newTask.isChecked!=true){
+                DateTime scheduled=_reminderTime;
+                DateTime lsrem=scheduled.subtract(Duration(minutes: 30));
+                NotificationService.scheduleNotification(
+                  0,
+                  'The ${_title} will expire in 30 mins',
+                  _disc,
+                  lsrem,
+                );
+                NotificationService.scheduleNotification(
+                  0,
+                  'The ${_title}has expired',
+                  _disc,
+                  scheduled,
+                );
+              }
+
               Get.back();  // Close the dialog
             }
           },

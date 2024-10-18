@@ -61,7 +61,7 @@ class _TodoState extends State<Todo> {
                         children: [
                           IconButton(
                             onPressed: () {
-                              Get.dialog(EditTaskDialog(index: index, task: task));
+                              Get.dialog(EditTaskDialog( task: task));
                             },
 
                             icon: Icon(Icons.edit_rounded),
