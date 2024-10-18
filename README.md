@@ -1,16 +1,23 @@
-# todoapp
+# Todoapp
+Application for the users to list their works and keep track on their work in day-to-day life .The application helps users to add ,update,delete their to-do list they also can set timer to
+complete the work .User also gets a reminder before the deadline and a push notification when the deatline over.
+The list is sorted according to the priority.
+User can search and find the specific to-do task with a search bar on top .
+To set dead line of a task they can set date , exact timming.
+To-do list displays Title,description ,amd deadline .
 
-A new Flutter project.
+## Developing of the application
 
-## Getting Started
+I used Getx,MVC architecture,sharedpreferences,flutter_local_notification.
 
-This project is a starting point for a Flutter application.
+For statemangement I used Getx .
 
-A few resources to get you started if this is your first Flutter project:
+For the priority (High ,medium,low) is used sorting.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+For the remainder I used the flutter_local_notification 30 mi before the end of the deadline as to give a quick remainder for the user and another push notification as the deadline ends.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+
+## Demo link
+
+- [Demo-TODO application](https://drive.google.com/file/d/12Ag9nGL4QGv3ZtIK_n34xG5vGUNy5Vre/view?usp=drivesdk)
