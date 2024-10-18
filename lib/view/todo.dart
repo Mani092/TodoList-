@@ -38,25 +38,28 @@ class _TodoState extends State<Todo> {
           ),
           Expanded(
             child: Obx(() {
-              return ListView.builder(
-                itemCount: taskController.filteredTasks.length,
-                itemBuilder: (context, index) {
-                  final task = taskController.filteredTasks[index];
-                  return ListTile(
-                    leading: Obx(() => Checkbox(
-                      value: task.isChecked.value,  // Use .value to get the current state
-                      onChanged: (value) {
-                        taskController.toggleTaskCompletion(task);  // Toggle the isChecked state
-                      },
-                    )),
-                    title: Obx(() => Text(
-                      task.title.value,
-                      style: TextStyle(
-                        decoration: task.isChecked.value
-                            ? TextDecoration.lineThrough  // Strike-through if task is completed
-                            : TextDecoration.none,
-                      ),
-                    )),
+              if (!taskController.isTasksLoaded.value) {
+                return Center(child: CircularProgressIndicator());  // Show loading indicator while tasks load
+              } else{
+                return ListView.builder(
+                  itemCount: taskController.filteredTasks.length,
+                  itemBuilder: (context, index) {
+                    final task = taskController.filteredTasks[index];
+                    return ListTile(
+                      leading: Obx(() => Checkbox(
+                        value: task.isChecked.value,  // Use .value to get the current state
+                        onChanged: (value) {
+                          taskController.toggleTaskCompletion(task);  // Toggle the isChecked state
+                        },
+                      )),
+                      title: Obx(() => Text(
+                        task.title.value,
+                        style: TextStyle(
+                          decoration: task.isChecked.value
+                              ? TextDecoration.lineThrough  // Strike-through if task is completed
+                              : TextDecoration.none,
+                        ),
+                      )),
                       trailing: Wrap(
                         children: [
                           IconButton(
@@ -75,12 +78,14 @@ class _TodoState extends State<Todo> {
                           ),
                         ],
                       ),
-                    subtitle: Obx(() => Text(
-                      'Description: ${task.description.value}\nPriority: ${task.priority.value} | Reminder: ${task.reminderTime.value}',
-                    )),
-                  );
-                },
-              );
+                      subtitle: Obx(() => Text(
+                        'Description: ${task.description.value}\nPriority: ${task.priority.value} | Reminder: ${task.reminderTime.value}',
+                      )),
+                    );
+                  },
+                );
+              }
+
             }),
           ),
         ],

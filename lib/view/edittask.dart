@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:todoapp/controller/controller.dart';
-
+import '../controller/controller.dart';
 import '../model/task.dart';
 
 class EditTaskDialog extends StatefulWidget {
@@ -26,7 +25,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
   void initState() {
     super.initState();
 
-    // Set initial values
+    // Set initial values from the task to be edited
     titleController.text = widget.task.title.value;
     descriptionController.text = widget.task.description.value;
     selectedPriority = widget.task.priority.value;
@@ -47,7 +46,6 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
                 labelText: 'Title',
               ),
             ),
-
             // Description Text Field
             TextField(
               controller: descriptionController,
@@ -55,8 +53,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
                 labelText: 'Description',
               ),
             ),
-
-            // Dropdown for Priority Level
+            // Dropdown for Priority
             DropdownButton<String>(
               value: selectedPriority,
               items: ['Low', 'Medium', 'High'].map((String value) {
@@ -66,16 +63,12 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    selectedPriority = newValue;
-                  });
-                }
+                setState(() {
+                  selectedPriority = newValue!;
+                });
               },
             ),
-
             SizedBox(height: 10),
-
             // Select Reminder Date
             TextButton(
               onPressed: () async {
@@ -119,7 +112,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            // Update the task
+            // Update the task with new values
             taskController.edititem(
               widget.task,
               titleController.text,
@@ -127,6 +120,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
               selectedPriority,
               selectedReminderTime,
             );
+            taskController.saveTasks();  // Save updated tasks to SharedPreferences
             Navigator.pop(context);  // Close the dialog after saving
           },
           child: Text('Save'),
